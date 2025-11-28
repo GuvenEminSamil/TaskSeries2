@@ -13,11 +13,9 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -26,5 +24,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Debug (optional but very useful once)
+      - name: Show repo files
+        run: |
+          pwd
+          ls -la
+          ls -la app
+          python -c "import sys; print(sys.path)"
+
       - name: Run tests
-        run: pytest -q
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest -q
