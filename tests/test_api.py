@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-import main
+from app import main
 
 client = TestClient(main.app)
 
@@ -15,7 +15,6 @@ async def test_generate_success(monkeypatch):
     async def fake_generate_with_ollama(model: str, prompt: str, temperature: float = 0.2, max_tokens: int = 256):
         return "MOCK_OUTPUT"
 
-    import main
     monkeypatch.setattr(main, "generate_with_ollama", fake_generate_with_ollama)
 
     r = client.post("/generate", json={"prompt": "hi", "model": "gemma3:4b", "temperature": 0.2, "max_tokens": 16})
@@ -34,7 +33,6 @@ async def test_generate_handles_ollama_error(monkeypatch):
     async def fake_generate_with_ollama(*args, **kwargs):
         raise RuntimeError("Ollama down")
 
-    import main
     monkeypatch.setattr(main, "generate_with_ollama", fake_generate_with_ollama)
 
     r = client.post("/generate", json={"prompt": "hi"})
